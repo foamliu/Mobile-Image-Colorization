@@ -163,7 +163,7 @@ def valid(valid_loader, model, criterion, logger):
     status = 'Validation: Loss {loss.avg:.4f}\t Accuracy {acc.avg:.5f}\n'.format(loss=losses, acc=accs)
     logger.info(status)
 
-    return losses.avgg, accs.avg
+    return losses.avg, accs.avg
 
 
 def main():
