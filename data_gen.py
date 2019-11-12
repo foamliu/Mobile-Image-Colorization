@@ -66,6 +66,7 @@ class MICDataset(Dataset):
             y = np.fliplr(y)
 
         y = np.transpose(y, (2, 0, 1))  # HxWxC array to CxHxW
+        print(np.min(y))
         return x, y
 
     def __len__(self):
