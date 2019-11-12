@@ -4,7 +4,7 @@ from tensorboardX import SummaryWriter
 from torch import nn
 from torch.optim.lr_scheduler import MultiStepLR
 
-from config import device, im_size, grad_clip, print_freq
+from config import device, im_size, num_classes, grad_clip, print_freq
 from data_gen import MICDataset
 from models.deeplab import DeepLab
 from utils import parse_args, save_checkpoint, AverageMeter, clip_gradient, get_logger, get_learning_rate, \
@@ -22,7 +22,7 @@ def train_net(args):
 
     # Initialize / load checkpoint
     if checkpoint is None:
-        model = DeepLab(backbone='mobilenet', output_stride=16, num_classes=1)
+        model = DeepLab(backbone='mobilenet', output_stride=16, num_classes=num_classes)
         model = nn.DataParallel(model)
 
         if args.optimizer == 'sgd':
@@ -44,9 +44,9 @@ def train_net(args):
     model = model.to(device)
 
     # Custom dataloaders
-    train_dataset = DIMDataset('train')
+    train_dataset = MICDataset('train')
     train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=8)
-    valid_dataset = DIMDataset('valid')
+    valid_dataset = MICDataset('valid')
     valid_loader = torch.utils.data.DataLoader(valid_dataset, batch_size=args.batch_size, shuffle=False, num_workers=8)
 
     scheduler = MultiStepLR(optimizer, milestones=[10, 20], gamma=0.1)
