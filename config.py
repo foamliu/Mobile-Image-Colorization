@@ -13,8 +13,9 @@ grad_clip = 5.  # clip gradients at an absolute value of
 print_freq = 100  # print training/validation stats  every __ batches
 checkpoint = None  # path to checkpoint, None if none
 
-num_train_samples = 529202
-num_valid_samples = 4268
+num_samples = 118287
+num_train = 110000
+num_valid = 8287
 num_classes = 313
 kernel = 3
 epsilon = 1e-8

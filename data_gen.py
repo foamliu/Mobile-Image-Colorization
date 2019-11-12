@@ -31,10 +31,7 @@ class MICDataset(Dataset):
     def __init__(self, split):
         self.split = split
 
-        if split == 'train':
-            names_file = 'train_names.txt'
-        else:
-            names_file = 'valid_names.txt'
+        names_file = '{}.txt'.format(split)
 
         with open(names_file, 'r') as f:
             self.names = f.read().splitlines()

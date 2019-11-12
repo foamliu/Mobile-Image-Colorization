@@ -1,31 +1,25 @@
 import os
-import random
 
-import numpy as np
-
-from config import image_folder
+from config import image_folder, num_train
 
 
 def split_data():
     names = [f for f in os.listdir(image_folder) if f.lower().endswith('.jpg')]
 
-    num_samples = len(names)  # 1341430
+    num_samples = len(names)  # 118287
     print('num_samples: ' + str(num_samples))
 
-    num_train_samples = int(num_samples * 0.992)
-    print('num_train_samples: ' + str(num_train_samples))
-    num_valid_samples = num_samples - num_train_samples
-    print('num_valid_samples: ' + str(num_valid_samples))
-    valid_names = random.sample(names, num_valid_samples)
-    train_names = [n for n in names if n not in valid_names]
-    np.random.shuffle(valid_names)
-    np.random.shuffle(train_names)
+    train = names[:num_train]
+    valid = names[num_train:]
 
-    with open('valid_names.txt', 'w') as file:
-        file.write('\n'.join(valid_names))
+    with open('train.txt', 'w') as file:
+        file.write('\n'.join(train))
 
-    with open('train_names.txt', 'w') as file:
-        file.write('\n'.join(train_names))
+    with open('valid.txt', 'w') as file:
+        file.write('\n'.join(valid))
+
+    print('num_train: ' + str(len(train)))
+    print('num_valid: ' + str(len(valid)))
 
 
 if __name__ == '__main__':
