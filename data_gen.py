@@ -48,7 +48,7 @@ class MICDataset(Dataset):
         filename = os.path.join(image_folder, name)
         # b: 0 <=b<=255, g: 0 <=g<=255, r: 0 <=r<=255.
         bgr = cv.imread(filename)
-        # bgr = cv.resize(bgr, (img_rows, img_cols), cv.INTER_CUBIC)
+        bgr = cv.resize(bgr, (im_size, im_size), cv.INTER_CUBIC)
         gray = cv.imread(filename, 0)
         # gray = cv.resize(gray, (img_rows, img_cols), cv.INTER_CUBIC)
         lab = cv.cvtColor(bgr, cv.COLOR_BGR2LAB)
@@ -68,7 +68,6 @@ class MICDataset(Dataset):
         print(x.shape)
         print(y.shape)
 
-        x = np.transpose(x, (2, 0, 1))  # HxWxC array to CxHxW
         y = np.transpose(y, (2, 0, 1))  # HxWxC array to CxHxW
 
         print(x.shape)
