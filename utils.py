@@ -76,8 +76,8 @@ def get_learning_rate(optimizer):
 def accuracy(scores, targets, k=1):
     scores = torch.reshape(scores, (-1, 313))
     targets = torch.reshape(targets, (-1, 313))
-    print(scores.size())
-    print(targets.size())
+    # print(scores.size())
+    # print(targets.size())
     num_pixels = targets.size(0) * 64 * 64
     _, scores = scores.topk(k, 1, True, True)
     _, targets = targets.topk(k, 1, True, True)
