@@ -31,9 +31,13 @@ class DeepLab(nn.Module):
         x, low_level_feat = self.backbone(input)
         x = self.aspp(x)
         x = self.decoder(x, low_level_feat)
+        print(x.size())
         x = F.interpolate(x, size=input.size()[2:], mode='bilinear', align_corners=True)
+        print(x.size())
         x = torch.squeeze(x, dim=1)  # [N, 1, 320, 320] -> [N, 320, 320]
+        print(x.size())
         x = self.softmax(x)
+        print(x.size())
 
         return x
 
