@@ -7,8 +7,7 @@ import keras.backend as K
 import numpy as np
 import sklearn.neighbors as nn
 
-from config import img_rows, img_cols
-from config import nb_neighbors, T, epsilon
+from config import im_size, nb_neighbors, T, epsilon
 from model import build_model
 
 if __name__ == '__main__':
@@ -27,7 +26,7 @@ if __name__ == '__main__':
 
     samples = random.sample(names, 10)
 
-    h, w = img_rows // 4, img_cols // 4
+    h, w = im_size // 4, im_size // 4
 
     # Load the array of quantized ab value
     q_ab = np.load("data/pts_in_hull.npy")
@@ -43,8 +42,8 @@ if __name__ == '__main__':
         # b: 0 <=b<=255, g: 0 <=g<=255, r: 0 <=r<=255.
         bgr = cv.imread(filename)
         gray = cv.imread(filename, 0)
-        bgr = cv.resize(bgr, (img_rows, img_cols), cv.INTER_CUBIC)
-        gray = cv.resize(gray, (img_rows, img_cols), cv.INTER_CUBIC)
+        bgr = cv.resize(bgr, (im_size, im_size), cv.INTER_CUBIC)
+        gray = cv.resize(gray, (im_size, im_size), cv.INTER_CUBIC)
         # L: 0 <=L<= 255, a: 42 <=a<= 226, b: 20 <=b<= 223.
         lab = cv.cvtColor(bgr, cv.COLOR_BGR2LAB)
         L = lab[:, :, 0]
@@ -56,7 +55,7 @@ if __name__ == '__main__':
         # print('np.min(a): ' + str(np.min(a)))
         # print('np.max(b): ' + str(np.max(b)))
         # print('np.min(b): ' + str(np.min(b)))
-        x_test = np.empty((1, img_rows, img_cols, 1), dtype=np.float32)
+        x_test = np.empty((1, im_size, im_size, 1), dtype=np.float32)
         x_test[0, :, :, 0] = gray / 255.
 
         # L: 0 <=L<= 255, a: 42 <=a<= 226, b: 20 <=b<= 223.
@@ -77,8 +76,8 @@ if __name__ == '__main__':
         # print('np.min(X_a): ' + str(np.min(X_a)))
         # print('np.max(X_b): ' + str(np.max(X_b)))
         # print('np.min(X_b): ' + str(np.min(X_b)))
-        X_a = cv.resize(X_a, (img_rows, img_cols), cv.INTER_CUBIC)
-        X_b = cv.resize(X_b, (img_rows, img_cols), cv.INTER_CUBIC)
+        X_a = cv.resize(X_a, (im_size, im_size), cv.INTER_CUBIC)
+        X_b = cv.resize(X_b, (im_size, im_size), cv.INTER_CUBIC)
 
         # Before: -90 <=a<= 100, -110 <=b<= 110
         # After: 38 <=a<= 228, 18 <=b<= 238
@@ -89,7 +88,7 @@ if __name__ == '__main__':
         # print('np.max(X_b): ' + str(np.max(X_b)))
         # print('np.min(X_b): ' + str(np.min(X_b)))
 
-        out_lab = np.zeros((img_rows, img_cols, 3), dtype=np.int32)
+        out_lab = np.zeros((im_size, im_size, 3), dtype=np.int32)
         out_lab[:, :, 0] = lab[:, :, 0]
         out_lab[:, :, 1] = X_a
         out_lab[:, :, 2] = X_b

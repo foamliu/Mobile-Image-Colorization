@@ -6,7 +6,7 @@ import cv2 as cv
 import numpy as np
 import sklearn.neighbors as nn
 
-from data_generator import get_soft_encoding
+from data_gen import get_soft_encoding
 
 
 class TestStringMethods(unittest.TestCase):

@@ -6,7 +6,7 @@ from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau
 from keras.utils import multi_gpu_model
 
 from config import patience, epochs, num_train_samples, num_valid_samples, batch_size
-from data_generator import train_gen, valid_gen
+from data_gen import train_gen, valid_gen
 from model import build_model
 from utils import get_available_gpus, categorical_crossentropy_color
 

@@ -7,7 +7,7 @@ import numpy as np
 import sklearn.neighbors as nn
 from keras.utils import Sequence
 
-from config import batch_size, img_rows, img_cols, nb_neighbors
+from config import batch_size, im_size, nb_neighbors
 
 image_folder = '/mnt/code/ImageNet-Downloader/image/resized'
 
@@ -57,10 +57,10 @@ class DataGenSequence(Sequence):
     def __getitem__(self, idx):
         i = idx * batch_size
 
-        out_img_rows, out_img_cols = img_rows // 4, img_cols // 4
+        out_img_rows, out_img_cols = im_size // 4, im_size // 4
 
         length = min(batch_size, (len(self.names) - i))
-        batch_x = np.empty((length, img_rows, img_cols, 1), dtype=np.float32)
+        batch_x = np.empty((length, im_size, im_size, 1), dtype=np.float32)
         batch_y = np.empty((length, out_img_rows, out_img_cols, self.nb_q), dtype=np.float32)
 
         for i_batch in range(length):

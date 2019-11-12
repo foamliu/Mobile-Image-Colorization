@@ -1,4 +1,8 @@
-img_rows, img_cols = 256, 256
+import torch
+
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')  # sets device for model and PyTorch tensors
+
+im_size = 256
 channel = 3
 batch_size = 32
 epochs = 10000
