@@ -68,7 +68,7 @@ class MICDataset(Dataset):
         x = np.array([x])
         x = np.clip(x, a_min=0, a_max=1.)
         y = np.transpose(y, (2, 0, 1))  # HxWxC array to CxHxW
-        y = np.clip(y, a_min=0, a_max=int('inf'))
+        y = np.clip(y, a_min=0, a_max=1.)
         return x, y
 
     def __len__(self):
