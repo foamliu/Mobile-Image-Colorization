@@ -21,9 +21,6 @@ def split_data():
     np.random.shuffle(valid_names)
     np.random.shuffle(train_names)
 
-    # with open('names.txt', 'w') as file:
-    #     file.write('\n'.join(names))
-
     with open('valid_names.txt', 'w') as file:
         file.write('\n'.join(valid_names))
 
