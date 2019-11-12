@@ -65,6 +65,9 @@ class MICDataset(Dataset):
             x = np.fliplr(x)
             y = np.fliplr(y)
 
+        print(x.shape)
+        print(y.shape)
+
         x = np.transpose(x, (2, 0, 1))  # HxWxC array to CxHxW
         y = np.transpose(y, (2, 0, 1))  # HxWxC array to CxHxW
 
