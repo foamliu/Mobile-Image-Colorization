@@ -74,13 +74,16 @@ def get_learning_rate(optimizer):
 
 
 def accuracy(scores, targets, k=1):
+    scores = torch.reshape(scores, (-1, 313))
+    targets = torch.reshape(targets, (-1, 313))
     print(scores.size())
     print(targets.size())
-    batch_size = targets.size(0)
-    _, ind = scores.topk(k, 1, True, True)
-    correct = ind.eq(targets.view(-1, 1).expand_as(ind))
+    num_pixels = targets.size(0) * 64 * 64
+    _, scores = scores.topk(k, 1, True, True)
+    _, targets = targets.topk(k, 1, True, True)
+    correct = scores.eq(targets)
     correct_total = correct.view(-1).float().sum()  # 0D tensor
-    return correct_total.item() * (100.0 / batch_size)
+    return correct_total.item() * (100.0 / num_pixels)
 
 
 def parse_args():
