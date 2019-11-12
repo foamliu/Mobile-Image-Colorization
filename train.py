@@ -4,11 +4,10 @@ from tensorboardX import SummaryWriter
 from torch import nn
 from torch.optim.lr_scheduler import MultiStepLR
 
-from config import device, im_size, num_classes, grad_clip, print_freq
+from config import device, num_classes, grad_clip, print_freq
 from data_gen import MICDataset
 from models.deeplab import DeepLab
-from utils import parse_args, save_checkpoint, AverageMeter, clip_gradient, get_logger, get_learning_rate, \
-    alpha_prediction_loss
+from utils import parse_args, save_checkpoint, AverageMeter, clip_gradient, get_logger, get_learning_rate, accuracy
 
 
 def train_net(args):
@@ -43,6 +42,9 @@ def train_net(args):
     # Move to GPU, if available
     model = model.to(device)
 
+    # Loss function
+    criterion = nn.BCELoss().to(device)
+
     # Custom dataloaders
     train_dataset = MICDataset('train')
     train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=8)
@@ -56,22 +58,26 @@ def train_net(args):
         scheduler.step(epoch)
 
         # One epoch's training
-        train_loss = train(train_loader=train_loader,
-                           model=model,
-                           optimizer=optimizer,
-                           epoch=epoch,
-                           logger=logger)
+        train_loss, train_acc = train(train_loader=train_loader,
+                                      model=model,
+                                      criterion=criterion,
+                                      optimizer=optimizer,
+                                      epoch=epoch,
+                                      logger=logger)
         effective_lr = get_learning_rate(optimizer)
         print('Current effective learning rate: {}\n'.format(effective_lr))
 
-        writer.add_scalar('Train_Loss', train_loss, epoch)
+        writer.add_scalar('model/train_loss', train_loss, epoch)
+        writer.add_scalar('model/train_acc', train_acc, epoch)
 
         # One epoch's validation
-        valid_loss = valid(valid_loader=valid_loader,
-                           model=model,
-                           logger=logger)
+        valid_loss, valid_acc = valid(valid_loader=valid_loader,
+                                      model=model,
+                                      criterion=criterion,
+                                      logger=logger)
 
-        writer.add_scalar('Valid_Loss', valid_loss, epoch)
+        writer.add_scalar('model/valid_loss', valid_loss, epoch)
+        writer.add_scalar('model/valid_acc', valid_acc, epoch)
 
         # Check if there was an improvement
         is_best = valid_loss < best_loss
@@ -86,25 +92,24 @@ def train_net(args):
         save_checkpoint(epoch, epochs_since_improvement, model, optimizer, best_loss, is_best)
 
 
-def train(train_loader, model, optimizer, epoch, logger):
+def train(train_loader, model, criterion, optimizer, epoch, logger):
     model.train()  # train mode (dropout and batchnorm is used)
 
     losses = AverageMeter()
+    accs = AverageMeter()
 
     # Batches
-    for i, (img, alpha_label) in enumerate(train_loader):
+    for i, (img, target) in enumerate(train_loader):
         # Move to GPU, if available
-        img = img.type(torch.FloatTensor).to(device)  # [N, 4, 320, 320]
-        alpha_label = alpha_label.type(torch.FloatTensor).to(device)  # [N, 320, 320]
-        alpha_label = alpha_label.reshape((-1, 2, im_size * im_size))  # [N, 320*320]
+        img = img.float().to(device)  # [N, 1, 256, 256]
+        target = target.float().to(device)  # [N, 313, 64, 64]
 
         # Forward prop.
-        alpha_out = model(img)  # [N, 3, 320, 320]
-        alpha_out = alpha_out.reshape((-1, 1, im_size * im_size))  # [N, 320*320]
+        out = model(img)  # [N, 3, 320, 320]
 
         # Calculate loss
-        # loss = criterion(alpha_out, alpha_label)
-        loss = alpha_prediction_loss(alpha_out, alpha_label)
+        loss = criterion(out, target)
+        acc = accuracy(out, target)
 
         # Back prop.
         optimizer.zero_grad()
@@ -118,43 +123,44 @@ def train(train_loader, model, optimizer, epoch, logger):
 
         # Keep track of metrics
         losses.update(loss.item())
+        accs.update(acc)
 
         # Print status
-
         if i % print_freq == 0:
             status = 'Epoch: [{0}][{1}/{2}]\t' \
-                     'Loss {loss.val:.4f} ({loss.avg:.4f})\t'.format(epoch, i, len(train_loader), loss=losses)
+                     'Loss {loss.val:.4f} ({loss.avg:.4f})\t' \
+                     'Accuracy {acc.val:.5f} ({acc.avg:.5f})\t'.format(epoch, i, len(train_loader), loss=losses,
+                                                                       acc=accs)
             logger.info(status)
 
     return losses.avg
 
 
-def valid(valid_loader, model, logger):
+def valid(valid_loader, model, criterion, logger):
     model.eval()  # eval mode (dropout and batchnorm is NOT used)
 
     losses = AverageMeter()
+    accs = AverageMeter()
 
     # Batches
-    for img, alpha_label in valid_loader:
+    for img, target in valid_loader:
         # Move to GPU, if available
-        img = img.type(torch.FloatTensor).to(device)  # [N, 3, 320, 320]
-        alpha_label = alpha_label.type(torch.FloatTensor).to(device)  # [N, 320, 320]
-        alpha_label = alpha_label.reshape((-1, 2, im_size * im_size))  # [N, 320*320]
+        img = img.float().to(device)  # [N, 1, 256, 256]
+        target = target.float().to(device)  # [N, 313, 64, 64]
 
         # Forward prop.
-        alpha_out = model(img)  # [N, 320, 320]
-        alpha_out = alpha_out.reshape((-1, 1, im_size * im_size))  # [N, 320*320]
+        out = model(img)  # [N, 3, 320, 320]
 
         # Calculate loss
-        # loss = criterion(alpha_out, alpha_label)
-        loss = alpha_prediction_loss(alpha_out, alpha_label)
+        loss = criterion(out, target)
+        acc = accuracy(out, target)
 
         # Keep track of metrics
         losses.update(loss.item())
+        accs.update(acc)
 
     # Print status
-    status = 'Validation: Loss {loss.avg:.4f}\n'.format(loss=losses)
-
+    status = 'Validation: Loss {loss.avg:.4f}\t Accuracy {acc.avg:.5f}\n'.format(loss=losses, acc=accs)
     logger.info(status)
 
     return losses.avg
