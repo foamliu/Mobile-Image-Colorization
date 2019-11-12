@@ -66,9 +66,10 @@ class MICDataset(Dataset):
             y = np.fliplr(y)
 
         x = np.array([x])
-        print(x.shape)
+        x = np.clip(x, a_min=0)
         y = np.transpose(y, (2, 0, 1))  # HxWxC array to CxHxW
-        return x, torch.from_numpy(y)
+        y = np.clip(y, a_min=0)
+        return x, y
 
     def __len__(self):
         return len(self.names)
