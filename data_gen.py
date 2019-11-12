@@ -1,5 +1,5 @@
 import os
-
+import torch
 import cv2 as cv
 import numpy as np
 import sklearn.neighbors as nn
@@ -66,8 +66,7 @@ class MICDataset(Dataset):
             y = np.fliplr(y)
 
         y = np.transpose(y, (2, 0, 1))  # HxWxC array to CxHxW
-        print(np.min(y))
-        return x, y
+        return torch.from_numpy(x), torch.from_numpy(y)
 
     def __len__(self):
         return len(self.names)
