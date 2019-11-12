@@ -1,15 +1,11 @@
 import os
-import random
-from random import shuffle
 
 import cv2 as cv
 import numpy as np
 import sklearn.neighbors as nn
-from keras.utils import Sequence
+from torch.utils.data import Dataset
 
-from config import batch_size, im_size, nb_neighbors
-
-image_folder = '/mnt/code/ImageNet-Downloader/image/resized'
+from config import batch_size, im_size, nb_neighbors, image_folder
 
 
 def get_soft_encoding(image_ab, nn_finder, nb_q):
@@ -31,11 +27,11 @@ def get_soft_encoding(image_ab, nn_finder, nb_q):
     return y
 
 
-class DataGenSequence(Sequence):
-    def __init__(self, usage):
-        self.usage = usage
+class MICDataset(Dataset):
+    def __init__(self, split):
+        self.split = split
 
-        if usage == 'train':
+        if split == 'train':
             names_file = 'train_names.txt'
         else:
             names_file = 'valid_names.txt'
@@ -50,9 +46,6 @@ class DataGenSequence(Sequence):
         self.nb_q = q_ab.shape[0]
         # Fit a NN to q_ab
         self.nn_finder = nn.NearestNeighbors(n_neighbors=nb_neighbors, algorithm='ball_tree').fit(q_ab)
-
-    def __len__(self):
-        return int(np.ceil(len(self.names) / float(batch_size)))
 
     def __getitem__(self, idx):
         i = idx * batch_size
@@ -92,42 +85,5 @@ class DataGenSequence(Sequence):
 
         return batch_x, batch_y
 
-    def on_epoch_end(self):
-        np.random.shuffle(self.names)
-
-
-def train_gen():
-    return DataGenSequence('train')
-
-
-def valid_gen():
-    return DataGenSequence('valid')
-
-
-def split_data():
-    names = [f for f in os.listdir(image_folder) if f.lower().endswith('.jpg')]
-
-    num_samples = len(names)  # 1341430
-    print('num_samples: ' + str(num_samples))
-
-    num_train_samples = int(num_samples * 0.992)
-    print('num_train_samples: ' + str(num_train_samples))
-    num_valid_samples = num_samples - num_train_samples
-    print('num_valid_samples: ' + str(num_valid_samples))
-    valid_names = random.sample(names, num_valid_samples)
-    train_names = [n for n in names if n not in valid_names]
-    shuffle(valid_names)
-    shuffle(train_names)
-
-    # with open('names.txt', 'w') as file:
-    #     file.write('\n'.join(names))
-
-    with open('valid_names.txt', 'w') as file:
-        file.write('\n'.join(valid_names))
-
-    with open('train_names.txt', 'w') as file:
-        file.write('\n'.join(train_names))
-
-
-if __name__ == '__main__':
-    split_data()
+    def __len__(self):
+        return len(self.names)

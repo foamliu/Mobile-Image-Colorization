@@ -5,7 +5,7 @@ from torch import nn
 from torch.optim.lr_scheduler import MultiStepLR
 
 from config import device, im_size, grad_clip, print_freq
-from data_gen import DIMDataset
+from data_gen import MICDataset
 from models.deeplab import DeepLab
 from utils import parse_args, save_checkpoint, AverageMeter, clip_gradient, get_logger, get_learning_rate, \
     alpha_prediction_loss

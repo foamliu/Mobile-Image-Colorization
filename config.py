@@ -21,3 +21,5 @@ epsilon = 1e-8
 nb_neighbors = 5
 # temperature parameter T
 T = 0.38
+
+image_folder = 'data/train2017'
