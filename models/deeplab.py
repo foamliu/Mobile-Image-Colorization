@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
+
 from models.aspp import build_aspp
 from models.backbone import build_backbone
 from models.decoder import build_decoder
@@ -30,13 +30,9 @@ class DeepLab(nn.Module):
     def forward(self, input):
         x, low_level_feat = self.backbone(input)
         x = self.aspp(x)
-        x = self.decoder(x, low_level_feat)
-        print(x.size())
         # x = F.interpolate(x, size=input.size()[2:], mode='bilinear', align_corners=True)
         # x = torch.squeeze(x, dim=1)  # [N, 1, 320, 320] -> [N, 320, 320]
         x = self.softmax(x)
-        print(x.size())
-
         return x
 
     def freeze_bn(self):
