@@ -57,6 +57,8 @@ class MICDataset(Dataset):
         # Before: 42 <=a<= 226, 20 <=b<= 223
         # After: -86 <=a<= 98, -108 <=b<= 95
         out_ab = out_lab[:, :, 1:].astype(np.int32) - 128
+        print(out_ab.shape)
+        print(out_ab)
 
         y = get_soft_encoding(out_ab, self.nn_finder, self.nb_q)
 
