@@ -98,20 +98,20 @@ def train(train_loader, model, criterion, optimizer, epoch, logger):
     accs = AverageMeter()
 
     # Batches
-    for i, (img, target) in enumerate(train_loader):
+    for i, (img, y) in enumerate(train_loader):
         # Move to GPU, if available
         img = img.float().to(device)  # [N, 1, 256, 256]
-        target = target.to(device)  # [N, 313, 64, 64]
+        y = y.to(device)  # [N, 313, 64, 64]
 
         # Forward prop.
-        out = model(img)  # [N, 313, 256, 256]
+        y_hat = model(img)  # [N, 313, 256, 256]
 
         # Calculate loss
         # loss = criterion(out, target)
-        loss = -target * torch.log(out)
+        loss = -y * torch.log(y_hat)
         loss = loss.mean()
-        target = torch.argmax(target, dim=1)  # [N, 256, 256]
-        acc = accuracy(out, target)
+        y = torch.argmax(y, dim=1)  # [N, 256, 256]
+        acc = accuracy(y_hat, y)
 
         # Back prop.
         optimizer.zero_grad()
@@ -145,20 +145,20 @@ def valid(valid_loader, model, criterion, logger):
     accs = AverageMeter()
 
     # Batches
-    for img, target in valid_loader:
+    for img, y in valid_loader:
         # Move to GPU, if available
         img = img.float().to(device)  # [N, 1, 256, 256]
-        target = target.to(device)  # [N, 313, 64, 64]
+        y = y.to(device)  # [N, 313, 64, 64]
 
         # Forward prop.
-        out = model(img)  # [N, 313, 256, 256]
+        y_hat = model(img)  # [N, 313, 256, 256]
 
         # Calculate loss
         # loss = criterion(out, target)
-        loss = -target * torch.log(out)
+        loss = -y * torch.log(y_hat)
         loss = loss.mean()
-        target = torch.argmax(target, dim=1)
-        acc = accuracy(out, target)
+        y = torch.argmax(y, dim=1)
+        acc = accuracy(y_hat, y)
 
         # Keep track of metrics
         losses.update(loss.item())
