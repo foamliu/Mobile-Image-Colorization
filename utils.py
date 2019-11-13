@@ -5,6 +5,8 @@ import os
 import cv2 as cv
 import torch
 
+from config import num_classes
+
 
 def clip_gradient(optimizer, grad_clip):
     """
@@ -70,10 +72,12 @@ def get_learning_rate(optimizer):
     return optimizer.param_groups[0]['lr']
 
 
+# scores: [N, 313, 64, 64]
+# targets: [N, 64, 64]
 def accuracy(scores, targets, k=1):
-    num_pixels = targets.size(0) * 64 * 64
-    scores = torch.transpose(scores, 1, 3)
-    scores = torch.reshape(scores, (-1, 313))
+    num_pixels = targets.size(0) * targets.size(1) * targets.size(2)
+    scores = torch.transpose(scores, 1, 3)  # [N, 64, 64, 313]
+    scores = torch.reshape(scores, (-1, num_classes))  # [Nx64x64, 313]
     _, ind = scores.topk(k, 1, True, True)
     correct = ind.eq(targets.view(-1, 1).expand_as(ind))
     correct_total = correct.view(-1).float().sum()  # 0D tensor

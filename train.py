@@ -102,10 +102,10 @@ def train(train_loader, model, optimizer, epoch, logger):
 
         # Calculate loss
         # loss = criterion(out, target)
-        loss = -y * torch.log(y_hat)
-        loss = torch.sum(loss, dim=1)
+        loss = -y * torch.log(y_hat)  # [N, 313, 64, 64]
+        loss = torch.sum(loss, dim=1)  # [N, 64, 64]
         loss = loss.mean()
-        y = torch.argmax(y, dim=1)  # [N, 256, 256]
+        y = torch.argmax(y, dim=1)  # [N, 64, 64]
         acc = accuracy(y_hat, y)
 
         # Back prop.
@@ -150,10 +150,10 @@ def valid(valid_loader, model, logger):
 
         # Calculate loss
         # loss = criterion(out, target)
-        loss = -y * torch.log(y_hat)
-        loss = torch.sum(loss, dim=1)
+        loss = -y * torch.log(y_hat)  # [N, 313, 64, 64]
+        loss = torch.sum(loss, dim=1)  # [N, 64, 64]
         loss = loss.mean()
-        y = torch.argmax(y, dim=1)
+        y = torch.argmax(y, dim=1)  # [N, 64, 64]
         acc = accuracy(y_hat, y)
 
         # Keep track of metrics
