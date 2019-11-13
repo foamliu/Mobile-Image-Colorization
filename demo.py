@@ -62,6 +62,7 @@ if __name__ == '__main__':
         with torch.no_grad():
             X_colorized = model(x_test)
 
+        X_colorized = torch.transpose(X_colorized, 1, 3)
         X_colorized = X_colorized.cpu().numpy()
         X_colorized = X_colorized.reshape((h * w, nb_q))
 
