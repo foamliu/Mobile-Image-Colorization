@@ -23,7 +23,7 @@ def get_soft_encoding(image_ab, nn_finder, nb_q):
     y = np.zeros((ab.shape[0], nb_q))
     idx_pts = np.arange(ab.shape[0])[:, np.newaxis]
     y[idx_pts, idx_neigh] = wts
-    y = y.reshape(h, w, nb_q)
+    y = y.reshape((h, w, nb_q))
     return y
 
 
