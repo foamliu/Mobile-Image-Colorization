@@ -3,12 +3,11 @@ import os
 import random
 
 import cv2 as cv
-import keras.backend as K
+
 import numpy as np
 import sklearn.neighbors as nn
 
 from config import im_size, nb_neighbors, T, epsilon, image_folder
-from model import build_model
 
 if __name__ == '__main__':
     checkpoint = 'BEST_checkpoint.tar'
@@ -114,5 +113,3 @@ if __name__ == '__main__':
         cv.imwrite('images/{}_image.png'.format(i), gray)
         cv.imwrite('images/{}_gt.png'.format(i), bgr)
         cv.imwrite('images/{}_out.png'.format(i), out_bgr)
-
-    K.clear_session()
