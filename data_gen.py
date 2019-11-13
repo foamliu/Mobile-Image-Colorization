@@ -60,7 +60,7 @@ class MICDataset(Dataset):
         out_ab = out_lab[:, :, 1:].astype(np.int32) - 128
 
         y = get_soft_encoding(out_ab, self.nn_finder, self.nb_q)
-        print('y: ' + str(y))
+        # print('y: ' + str(y))
 
         if np.random.random_sample() > 0.5:
             x = np.fliplr(x)
