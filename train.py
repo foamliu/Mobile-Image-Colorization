@@ -26,7 +26,7 @@ def train_net(args):
 
         if args.optimizer == 'sgd':
             optimizer = torch.optim.SGD(model.parameters(), lr=args.lr, momentum=args.mom,
-                                        weight_decay=args.weight_decay)
+                                        weight_decay=args.weight_decay, nesterov=True)
         else:
             optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
 
