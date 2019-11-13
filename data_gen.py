@@ -57,8 +57,8 @@ class MICDataset(Dataset):
         # Before: 42 <=a<= 226, 20 <=b<= 223
         # After: -86 <=a<= 98, -108 <=b<= 95
         out_ab = out_lab[:, :, 1:].astype(np.int32) - 128
-        print(out_ab.shape)
-        print(out_ab)
+        print('out_ab.shape: ' + str(out_ab.shape))
+        print('out_ab: ' + str(out_ab))
 
         y = get_soft_encoding(out_ab, self.nn_finder, self.nb_q)
 
@@ -68,10 +68,10 @@ class MICDataset(Dataset):
 
         x = np.expand_dims(x, axis=0)
 
-        print(x.shape)
-        print(x)
-        print(y.shape)
-        print(y)
+        print('x.shape: ' + str(x.shape))
+        print('x: ' + str(x))
+        print('y.shape: ' + str(y.shape))
+        print('y: ' + str(y))
         return x, y
 
     def __len__(self):
