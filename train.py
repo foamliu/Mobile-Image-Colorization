@@ -41,9 +41,6 @@ def train_net(args):
     # Move to GPU, if available
     model = model.to(device)
 
-    # Loss function
-    criterion = nn.CrossEntropyLoss().to(device)
-
     # Custom dataloaders
     train_dataset = MICDataset('train')
     train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=8)
@@ -57,7 +54,6 @@ def train_net(args):
         # One epoch's training
         train_loss, train_acc = train(train_loader=train_loader,
                                       model=model,
-                                      criterion=criterion,
                                       optimizer=optimizer,
                                       epoch=epoch,
                                       logger=logger)
@@ -70,7 +66,6 @@ def train_net(args):
         # One epoch's validation
         valid_loss, valid_acc = valid(valid_loader=valid_loader,
                                       model=model,
-                                      criterion=criterion,
                                       logger=logger)
 
         writer.add_scalar('model/valid_loss', valid_loss, epoch)
@@ -90,7 +85,7 @@ def train_net(args):
         scheduler.step(epoch)
 
 
-def train(train_loader, model, criterion, optimizer, epoch, logger):
+def train(train_loader, model, optimizer, epoch, logger):
     model.train()  # train mode (dropout and batchnorm is used)
 
     losses = AverageMeter()
@@ -103,7 +98,7 @@ def train(train_loader, model, criterion, optimizer, epoch, logger):
         y = y.to(device)  # [N, 313, 64, 64]
 
         # Forward prop.
-        y_hat = model(img)  # [N, 313, 256, 256]
+        y_hat = model(img)  # [N, 313, 64, 64]
 
         # Calculate loss
         # loss = criterion(out, target)
@@ -137,7 +132,7 @@ def train(train_loader, model, criterion, optimizer, epoch, logger):
     return losses.avg, accs.avg
 
 
-def valid(valid_loader, model, criterion, logger):
+def valid(valid_loader, model, logger):
     model.eval()  # eval mode (dropout and batchnorm is NOT used)
 
     losses = AverageMeter()
@@ -150,7 +145,7 @@ def valid(valid_loader, model, criterion, logger):
         y = y.to(device)  # [N, 313, 64, 64]
 
         # Forward prop.
-        y_hat = model(img)  # [N, 313, 256, 256]
+        y_hat = model(img)  # [N, 313, 64, 64]
 
         # Calculate loss
         # loss = criterion(out, target)
