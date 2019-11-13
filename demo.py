@@ -1,11 +1,12 @@
 # import the necessary packages
 import os
 import random
-import torch
-import cv2 as cv
 import time
+
+import cv2 as cv
 import numpy as np
 import sklearn.neighbors as nn
+import torch
 
 from config import im_size, nb_neighbors, T, epsilon, image_folder
 
