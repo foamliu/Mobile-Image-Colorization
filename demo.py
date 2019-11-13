@@ -3,7 +3,7 @@ import os
 import random
 
 import cv2 as cv
-
+import time
 import numpy as np
 import sklearn.neighbors as nn
 
@@ -12,9 +12,7 @@ from config import im_size, nb_neighbors, T, epsilon, image_folder
 if __name__ == '__main__':
     checkpoint = 'BEST_checkpoint.tar'
     print('loading {}...'.format(checkpoint))
-    start = time.time()
     checkpoint = torch.load(checkpoint)
-    print('elapsed {} sec'.format(time.time() - start))
     model = checkpoint['model'].module
     model.eval()
 
