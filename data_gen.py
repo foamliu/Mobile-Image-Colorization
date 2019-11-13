@@ -66,7 +66,7 @@ class MICDataset(Dataset):
             y = np.fliplr(y)
 
         x = np.array([x])
-        # x = np.clip(x, a_min=0, a_max=1.)
+        x = np.clip(x, a_min=0, a_max=1.)
         return x, y
 
     def __len__(self):
