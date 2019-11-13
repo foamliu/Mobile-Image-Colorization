@@ -7,20 +7,19 @@ import keras.backend as K
 import numpy as np
 import sklearn.neighbors as nn
 
-from config import im_size, nb_neighbors, T, epsilon
+from config import im_size, nb_neighbors, T, epsilon, image_folder
 from model import build_model
 
 if __name__ == '__main__':
-    channel = 3
+    checkpoint = 'BEST_checkpoint.tar'
+    print('loading {}...'.format(checkpoint))
+    start = time.time()
+    checkpoint = torch.load(checkpoint)
+    print('elapsed {} sec'.format(time.time() - start))
+    model = checkpoint['model'].module
+    model.eval()
 
-    model_weights_path = 'models/model.08-5.7380.hdf5'
-    model = build_model()
-    model.load_weights(model_weights_path)
-
-    print(model.summary())
-
-    image_folder = '/mnt/code/ImageNet-Downloader/image/resized'
-    names_file = 'valid_names.txt'
+    names_file = 'valid.txt'
     with open(names_file, 'r') as f:
         names = f.read().splitlines()
 
@@ -55,11 +54,13 @@ if __name__ == '__main__':
         # print('np.min(a): ' + str(np.min(a)))
         # print('np.max(b): ' + str(np.max(b)))
         # print('np.min(b): ' + str(np.min(b)))
-        x_test = np.empty((1, im_size, im_size, 1), dtype=np.float32)
-        x_test[0, :, :, 0] = gray / 255.
+        x_test = np.empty((1, 1, im_size, im_size), dtype=np.float32)
+        x_test[0, 0, :, :] = gray / 255.
 
         # L: 0 <=L<= 255, a: 42 <=a<= 226, b: 20 <=b<= 223.
-        X_colorized = model.predict(x_test)
+        with torch.no_grad():
+            X_colorized = model(x_test)
+
         X_colorized = X_colorized.reshape((h * w, nb_q))
 
         # Reweight probas
