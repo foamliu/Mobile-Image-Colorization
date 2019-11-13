@@ -3,10 +3,7 @@ import logging
 import os
 
 import cv2 as cv
-import numpy as np
 import torch
-
-from config import im_size, epsilon
 
 
 def clip_gradient(optimizer, grad_clip):
@@ -107,48 +104,6 @@ def get_logger():
     logger.addHandler(handler)
     logger.setLevel(logging.DEBUG)
     return logger
-
-
-def safe_crop(mat, x, y, crop_size=(im_size, im_size)):
-    crop_height, crop_width = crop_size
-    if len(mat.shape) == 2:
-        ret = np.zeros((crop_height, crop_width), np.uint8)
-    else:
-        ret = np.zeros((crop_height, crop_width, 3), np.uint8)
-    crop = mat[y:y + crop_height, x:x + crop_width]
-    h, w = crop.shape[:2]
-    ret[0:h, 0:w] = crop
-    if crop_size != (im_size, im_size):
-        ret = cv.resize(ret, dsize=(im_size, im_size), interpolation=cv.INTER_NEAREST)
-    return ret
-
-
-# alpha prediction loss: the abosolute difference between the ground truth alpha values and the
-# predicted alpha values at each pixel. However, due to the non-differentiable property of
-# absolute values, we use the following loss function to approximate it.
-def alpha_prediction_loss(y_pred, y_true):
-    mask = y_true[:, 1, :]
-    diff = y_pred[:, 0, :] - y_true[:, 0, :]
-    diff = diff * mask
-    num_pixels = torch.sum(mask)
-    return torch.sum(torch.sqrt(torch.pow(diff, 2) + epsilon_sqr)) / (num_pixels + epsilon)
-
-
-# compute the MSE error given a prediction, a ground truth and a trimap.
-# pred: the predicted alpha matte
-# target: the ground truth alpha matte
-# trimap: the given trimap
-#
-def compute_mse(pred, alpha, trimap):
-    num_pixels = float((trimap == 128).sum())
-    return ((pred - alpha) ** 2).sum() / num_pixels
-
-
-# compute the SAD error given a prediction and a ground truth.
-#
-def compute_sad(pred, alpha):
-    diff = np.abs(pred - alpha)
-    return np.sum(diff) / 1000
 
 
 def draw_str(dst, target, s):
