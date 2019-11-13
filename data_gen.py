@@ -52,11 +52,10 @@ class MICDataset(Dataset):
     def __getitem__(self, i):
         name = self.names[i]
         filename = os.path.join(image_folder, name)
-        # b: 0 <=b<=255, g: 0 <=g<=255, r: 0 <=r<=255.
+        # b: 0<=b<=255, g: 0<=g<=255, r: 0<=r<=255.
         bgr = cv.imread(filename)
         gray = cv.imread(filename, 0)
         gray = cv.resize(gray, (im_size, im_size), cv.INTER_CUBIC)
-        # gray = cv.resize(gray, (img_rows, img_cols), cv.INTER_CUBIC)
         lab = cv.cvtColor(bgr, cv.COLOR_BGR2LAB)
         x = gray / 255.
 
@@ -73,7 +72,7 @@ class MICDataset(Dataset):
             y = np.fliplr(y)
 
         x = np.expand_dims(x, axis=0)
-        # x = np.clip(x, 0, 1)
+        x = np.clip(x, 0, 1)
         x = torch.from_numpy(x)
         # y = np.clip(y, 0, 313)
         y = torch.from_numpy(y)
