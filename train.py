@@ -47,7 +47,7 @@ def train_net(args):
     valid_dataset = MICDataset('valid')
     valid_loader = torch.utils.data.DataLoader(valid_dataset, batch_size=args.batch_size, shuffle=False, num_workers=8)
 
-    scheduler = MultiStepLR(optimizer, milestones=[10, 30, 80, 120], gamma=0.1)
+    scheduler = MultiStepLR(optimizer, milestones=[30, 80], gamma=0.1)
 
     # Epochs
     for epoch in range(start_epoch, args.end_epoch):
