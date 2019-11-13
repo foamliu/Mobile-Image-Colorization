@@ -66,7 +66,7 @@ class MICDataset(Dataset):
             x = np.fliplr(x)
             y = np.fliplr(y)
 
-        x = np.expand_dims(x, dim=0)
+        x = np.expand_dims(x, axis=0)
 
         print(x.shape)
         print(x)
