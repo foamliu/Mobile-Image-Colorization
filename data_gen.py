@@ -1,5 +1,5 @@
 import os
-import torch
+
 import cv2 as cv
 import numpy as np
 import sklearn.neighbors as nn
@@ -41,7 +41,6 @@ class MICDataset(Dataset):
         self.nb_q = q_ab.shape[0]
         # Fit a NN to q_ab
         self.nn_finder = nn.NearestNeighbors(n_neighbors=nb_neighbors, algorithm='ball_tree').fit(q_ab)
-        self.out_img_rows, self.out_img_cols = im_size // 4, im_size // 4
 
     def __getitem__(self, i):
         name = self.names[i]
@@ -54,7 +53,7 @@ class MICDataset(Dataset):
         lab = cv.cvtColor(bgr, cv.COLOR_BGR2LAB)
         x = gray / 255.
 
-        out_lab = cv.resize(lab, (self.out_img_rows, self.out_img_cols), cv.INTER_CUBIC)
+        out_lab = cv.resize(lab, (im_size // 4, im_size // 4), cv.INTER_CUBIC)
         # Before: 42 <=a<= 226, 20 <=b<= 223
         # After: -86 <=a<= 98, -108 <=b<= 95
         out_ab = out_lab[:, :, 1:].astype(np.int32) - 128
@@ -65,8 +64,10 @@ class MICDataset(Dataset):
             x = np.fliplr(x)
             y = np.fliplr(y)
 
-        x = np.array([x])
-        x = np.clip(x, a_min=0, a_max=1.)
+        x = np.expand_dims(x, dim=0)
+
+        print(x.shape)
+        print(x)
         print(y.shape)
         print(y)
         return x, y
