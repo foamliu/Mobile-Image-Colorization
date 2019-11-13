@@ -24,6 +24,7 @@ def get_soft_encoding(image_ab, nn_finder, nb_q):
     idx_pts = np.arange(ab.shape[0])[:, np.newaxis]
     y[idx_pts, idx_neigh] = wts
     y = y.reshape((h, w, nb_q))
+    y = np.argmax(y, axis=2)
     return y
 
 
