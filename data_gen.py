@@ -72,9 +72,9 @@ class MICDataset(Dataset):
             y = np.fliplr(y)
 
         x = np.expand_dims(x, axis=0)
-        x = np.clip(x, 0, 1)
+        x = np.clip(x, 0.0, 1.0)
         x = torch.from_numpy(x)
-        y = np.clip(y, 0, 313)
+        y = np.clip(y, 0, float('inf'))
         y = torch.from_numpy(y)
         y = y.transpose(0, 2)
 
