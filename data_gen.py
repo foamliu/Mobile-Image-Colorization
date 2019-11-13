@@ -68,6 +68,8 @@ class MICDataset(Dataset):
             y = np.fliplr(y)
 
         x = np.expand_dims(x, axis=0)
+        x = np.clip(x, 0, 1)
+        y = np.clip(y, 0, 313)
 
         # print('x.shape: ' + str(x.shape))
         # print('x: ' + str(x))

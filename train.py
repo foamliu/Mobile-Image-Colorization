@@ -9,12 +9,6 @@ from data_gen import MICDataset
 from models.deeplab import DeepLab
 from utils import parse_args, save_checkpoint, AverageMeter, clip_gradient, get_logger, get_learning_rate, accuracy
 
-def categorical_crossentropy(y_pred, y_true):
-    q = 313
-    y_true = torch.reshape(y_true, (-1, q))
-    y_pred = torch.reshape(y_pred, (-1, q))
-
-
 
 def train_net(args):
     torch.manual_seed(7)
