@@ -1,7 +1,7 @@
 # import the necessary packages
 import os
 import random
-import time
+from config import device
 
 import cv2 as cv
 import numpy as np
@@ -15,6 +15,7 @@ if __name__ == '__main__':
     print('loading {}...'.format(checkpoint))
     checkpoint = torch.load(checkpoint)
     model = checkpoint['model'].module
+    model = model.to(device)
     model.eval()
 
     names_file = 'valid.txt'
@@ -54,6 +55,8 @@ if __name__ == '__main__':
         # print('np.min(b): ' + str(np.min(b)))
         x_test = np.empty((1, 1, im_size, im_size), dtype=np.float32)
         x_test[0, 0, :, :] = gray / 255.
+        x_test = torch.from_numpy(x_test)
+        x_test = x_test.to(device)
 
         # L: 0 <=L<= 255, a: 42 <=a<= 226, b: 20 <=b<= 223.
         with torch.no_grad():
