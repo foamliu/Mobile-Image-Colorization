@@ -74,7 +74,7 @@ class MICDataset(Dataset):
         x = np.expand_dims(x, axis=0)
         x = np.clip(x, 0, 1)
         x = torch.from_numpy(x)
-        # y = np.clip(y, 0, 313)
+        y = np.clip(y, 0, 313)
         y = torch.from_numpy(y)
         y = y.transpose(0, 2)
 
