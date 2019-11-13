@@ -43,7 +43,7 @@ def train_net(args):
     model = model.to(device)
 
     # Loss function
-    criterion = nn.NLLLoss().to(device)
+    criterion = nn.CrossEntropyLoss().to(device)
 
     # Custom dataloaders
     train_dataset = MICDataset('train')
@@ -102,7 +102,7 @@ def train(train_loader, model, criterion, optimizer, epoch, logger):
     for i, (img, target) in enumerate(train_loader):
         # Move to GPU, if available
         img = img.float().to(device)  # [N, 1, 256, 256]
-        target = target.float().to(device)  # [N, 313, 64, 64]
+        target = target.to(device)  # [N, 313, 64, 64]
 
         # Forward prop.
         out = model(img)  # [N, 3, 320, 320]
@@ -146,7 +146,7 @@ def valid(valid_loader, model, criterion, logger):
     for img, target in valid_loader:
         # Move to GPU, if available
         img = img.float().to(device)  # [N, 1, 256, 256]
-        target = target.float().to(device)  # [N, 313, 64, 64]
+        target = target.to(device)  # [N, 313, 64, 64]
 
         # Forward prop.
         out = model(img)  # [N, 3, 320, 320]
