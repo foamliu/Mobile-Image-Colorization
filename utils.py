@@ -75,9 +75,7 @@ def get_learning_rate(optimizer):
 
 def accuracy(scores, targets, k=1):
     num_pixels = targets.size(0) * 64 * 64
-    print('scores.size(): ' + str(scores.size()))
     scores = torch.transpose(scores, 1, 3)
-    print('scores.size(): ' + str(scores.size()))
     scores = torch.reshape(scores, (-1, 313))
     _, ind = scores.topk(k, 1, True, True)
     correct = ind.eq(targets.view(-1, 1).expand_as(ind))
@@ -89,7 +87,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description='Train face network')
     # general
     parser.add_argument('--end-epoch', type=int, default=1000, help='training epoch size.')
-    parser.add_argument('--lr', type=float, default=0.001, help='start learning rate')
+    parser.add_argument('--lr', type=float, default=0.01, help='start learning rate')
     parser.add_argument('--lr-step', type=int, default=10, help='period of learning rate decay')
     parser.add_argument('--optimizer', default='sgd', help='optimizer')
     parser.add_argument('--weight-decay', type=float, default=0.0, help='weight decay')
