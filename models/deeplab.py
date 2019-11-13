@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
+
 from models.aspp import build_aspp
 from models.backbone import build_backbone
 from models.decoder import build_decoder
@@ -22,7 +22,7 @@ class DeepLab(nn.Module):
         self.backbone = build_backbone(backbone, output_stride, BatchNorm)
         self.aspp = build_aspp(backbone, output_stride, BatchNorm)
         self.decoder = build_decoder(num_classes, backbone, BatchNorm)
-        self.softmax = nn.Softmax()
+        self.softmax = nn.Softmax(dim=1)
 
         if freeze_bn:
             self.freeze_bn()
