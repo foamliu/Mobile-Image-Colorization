@@ -107,7 +107,10 @@ def train(train_loader, model, criterion, optimizer, epoch, logger):
         out = model(img)  # [N, 313, 256, 256]
 
         # Calculate loss
-        loss = criterion(out, target)
+        # loss = criterion(out, target)
+        loss = -target * torch.log(out)
+        loss = loss.mean()
+        target = torch.argmax(target, dim=1)  # [N, 256, 256]
         acc = accuracy(out, target)
 
         # Back prop.
@@ -151,7 +154,10 @@ def valid(valid_loader, model, criterion, logger):
         out = model(img)  # [N, 313, 256, 256]
 
         # Calculate loss
-        loss = criterion(out, target)
+        # loss = criterion(out, target)
+        loss = -target * torch.log(out)
+        loss = loss.mean()
+        target = torch.argmax(target, dim=1)
         acc = accuracy(out, target)
 
         # Keep track of metrics

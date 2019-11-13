@@ -3,6 +3,7 @@ import os
 import cv2 as cv
 import numpy as np
 import sklearn.neighbors as nn
+import torch
 from torch.utils.data import Dataset
 
 from config import im_size, nb_neighbors, image_folder
@@ -24,8 +25,13 @@ def get_soft_encoding(image_ab, nn_finder, nb_q):
     idx_pts = np.arange(ab.shape[0])[:, np.newaxis]
     y[idx_pts, idx_neigh] = wts
     y = y.reshape((h, w, nb_q))
-    y = np.argmax(y, axis=2)
+    # y = np.argmax(y, axis=2)
     return y
+
+
+def negative_log_likelihood(y_pred, y_true):
+    loss = -y_true * torch.log(y_pred)
+    return loss.mean()
 
 
 class MICDataset(Dataset):
@@ -67,8 +73,11 @@ class MICDataset(Dataset):
             y = np.fliplr(y)
 
         x = np.expand_dims(x, axis=0)
-        x = np.clip(x, 0, 1)
-        y = np.clip(y, 0, 313)
+        # x = np.clip(x, 0, 1)
+        x = torch.from_numpy(x)
+        # y = np.clip(y, 0, 313)
+        y = torch.from_numpy(y)
+        y = y.transpose(0, 2)
 
         # print('x.shape: ' + str(x.shape))
         # print('x: ' + str(x))
