@@ -66,10 +66,7 @@ class MICDataset(Dataset):
             y = np.fliplr(y)
 
         x = np.array([x])
-        x = np.clip(x, a_min=0, a_max=1.)
-        y = np.transpose(y, (2, 0, 1))  # HxWxC array to CxHxW
-        y = np.argmax(y, axis=1)
-        # y = np.clip(y, a_min=0, a_max=1.)
+        # x = np.clip(x, a_min=0, a_max=1.)
         return x, y
 
     def __len__(self):
