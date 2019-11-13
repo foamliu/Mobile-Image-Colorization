@@ -106,7 +106,6 @@ def train(train_loader, model, criterion, optimizer, epoch, logger):
 
         # Forward prop.
         out = model(img)  # [N, 313, 256, 256]
-        out = torch.transpose(out, 1, 3)
         print('out.size(): ' + str(out.size()))
 
         # Calculate loss
@@ -151,7 +150,7 @@ def valid(valid_loader, model, criterion, logger):
         target = target.to(device)  # [N, 313, 64, 64]
 
         # Forward prop.
-        out = model(img)  # [N, 3, 320, 320]
+        out = model(img)  # [N, 313, 256, 256]
 
         # Calculate loss
         loss = criterion(out, target)

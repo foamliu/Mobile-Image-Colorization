@@ -39,7 +39,6 @@ class MICDataset(Dataset):
 
         # Load the array of quantized ab value
         q_ab = np.load("data/pts_in_hull.npy")
-        print('q_ab: ' + str(q_ab))
         self.nb_q = q_ab.shape[0]
         # Fit a NN to q_ab
         self.nn_finder = nn.NearestNeighbors(n_neighbors=nb_neighbors, algorithm='ball_tree').fit(q_ab)
