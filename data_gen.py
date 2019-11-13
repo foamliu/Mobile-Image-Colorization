@@ -67,6 +67,7 @@ class MICDataset(Dataset):
 
         x = np.array([x])
         x = np.clip(x, a_min=0, a_max=1.)
+        print(y.shape)
         print(y)
         return x, y
 
