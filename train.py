@@ -43,7 +43,7 @@ def train_net(args):
     model = model.to(device)
 
     # Loss function
-    criterion = nn.CrossEntropyLoss().to(device)
+    criterion = nn.NLLLoss().to(device)
 
     # Custom dataloaders
     train_dataset = MICDataset('train')
@@ -51,7 +51,7 @@ def train_net(args):
     valid_dataset = MICDataset('valid')
     valid_loader = torch.utils.data.DataLoader(valid_dataset, batch_size=args.batch_size, shuffle=False, num_workers=8)
 
-    scheduler = MultiStepLR(optimizer, milestones=[10, 20, 30], gamma=0.1)
+    scheduler = MultiStepLR(optimizer, milestones=[10, 20], gamma=0.1)
 
     # Epochs
     for epoch in range(start_epoch, args.end_epoch):
