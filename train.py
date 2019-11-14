@@ -2,12 +2,14 @@ import numpy as np
 import torch
 from tensorboardX import SummaryWriter
 from torch import nn
-# from torch.optim.lr_scheduler import MultiStepLR
 
 from config import device, num_classes, grad_clip, print_freq
 from data_gen import MICDataset
 from models.deeplab import DeepLab
 from utils import parse_args, save_checkpoint, AverageMeter, clip_gradient, get_logger, get_learning_rate, accuracy
+
+
+# from torch.optim.lr_scheduler import MultiStepLR
 
 
 def train_net(args):
@@ -105,7 +107,7 @@ def train(train_loader, model, optimizer, epoch, logger):
         loss = -y * (1 - y_hat).pow(2) * torch.log(y_hat)  # [N, 313, 64, 64]
         loss = torch.sum(loss, dim=1)  # [N, 64, 64]
         loss = loss.mean()
-        acc = accuracy(y_hat, y, 5)
+        acc = accuracy(y_hat, y)
 
         # Back prop.
         optimizer.zero_grad()
@@ -152,7 +154,7 @@ def valid(valid_loader, model, logger):
         loss = -y * (1 - y_hat).pow(2) * torch.log(y_hat)  # [N, 313, 64, 64]
         loss = torch.sum(loss, dim=1)  # [N, 64, 64]
         loss = loss.mean()
-        acc = accuracy(y_hat, y, 5)
+        acc = accuracy(y_hat, y)
 
         # Keep track of metrics
         losses.update(loss.item())
