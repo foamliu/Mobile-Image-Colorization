@@ -121,8 +121,8 @@ def train(train_loader, model, optimizer, epoch, logger):
         optimizer.step()
 
         # Keep track of metrics
-        losses.update(loss.item())
-        accs.update(acc)
+        losses.update(loss.item(), img.size(0))
+        accs.update(acc, img.size(0))
 
         # Print status
         if i % print_freq == 0:
@@ -159,8 +159,8 @@ def valid(valid_loader, model, logger):
         acc = accuracy(y_hat, y)
 
         # Keep track of metrics
-        losses.update(loss.item())
-        accs.update(acc)
+        losses.update(loss.item(), img.size(0))
+        accs.update(acc, img.size(0))
 
     # Print status
     status = 'Validation: Loss {loss.avg:.5f}\t Accuracy {acc.avg:.5f}\n'.format(loss=losses, acc=accs)
