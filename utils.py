@@ -76,7 +76,7 @@ def accuracy(scores, targets):
     _, scores = torch.max(scores, dim=1)  # [N, 64, 64]
     _, targets = torch.max(targets, dim=1)  # [N, 64, 64]
     num_pixels = targets.size(0) * targets.size(1) * targets.size(2)
-    correct_total = (scores == targets).sum().item()  # 0D tensor
+    correct_total = (scores == targets).sum()  # 0D tensor
     return correct_total.item() * (100.0 / num_pixels)
 
 
