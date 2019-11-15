@@ -2,7 +2,7 @@ import numpy as np
 import torch
 from tensorboardX import SummaryWriter
 from torch import nn
-# from torch.optim.lr_scheduler import MultiStepLR
+from torch.optim.lr_scheduler import MultiStepLR
 
 from config import device, num_classes, grad_clip, print_freq
 from data_gen import MICDataset
@@ -48,7 +48,7 @@ def train_net(args):
     valid_dataset = MICDataset('valid')
     valid_loader = torch.utils.data.DataLoader(valid_dataset, batch_size=args.batch_size, shuffle=False, num_workers=8)
 
-    # scheduler = MultiStepLR(optimizer, milestones=[10, 20], gamma=0.1)
+    scheduler = MultiStepLR(optimizer, milestones=[10, 20], gamma=0.3333)
 
     # Epochs
     for epoch in range(start_epoch, args.end_epoch):
@@ -83,7 +83,7 @@ def train_net(args):
 
         # Save checkpoint
         save_checkpoint(epoch, epochs_since_improvement, model, optimizer, best_loss, is_best)
-        # scheduler.step(epoch)
+        scheduler.step(epoch)
 
 
 def train(train_loader, model, optimizer, epoch, logger):
@@ -103,8 +103,8 @@ def train(train_loader, model, optimizer, epoch, logger):
 
         # Calculate loss
         # loss = criterion(out, target)
-        # loss = -y * (1 - y_hat).pow(2) * torch.log(y_hat)  # [N, 313, 64, 64]
-        loss = -y * torch.log(y_hat)  # [N, 313, 64, 64]
+        loss = -y * (1 - y_hat).pow(2) * torch.log(y_hat)  # [N, 313, 64, 64]
+        # loss = -y * torch.log(y_hat)  # [N, 313, 64, 64]
         loss = torch.sum(loss, dim=1)  # [N, 64, 64]
         loss = loss.mean()
         acc = accuracy(y_hat, y)
@@ -151,8 +151,8 @@ def valid(valid_loader, model, logger):
 
         # Calculate loss
         # loss = criterion(out, target)
-        # loss = -y * (1 - y_hat).pow(2) * torch.log(y_hat)  # [N, 313, 64, 64]
-        loss = -y * torch.log(y_hat)  # [N, 313, 64, 64]
+        loss = -y * (1 - y_hat).pow(2) * torch.log(y_hat)  # [N, 313, 64, 64]
+        # loss = -y * torch.log(y_hat)  # [N, 313, 64, 64]
         loss = torch.sum(loss, dim=1)  # [N, 64, 64]
         loss = loss.mean()
         acc = accuracy(y_hat, y)
