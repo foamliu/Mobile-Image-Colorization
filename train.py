@@ -27,7 +27,7 @@ def train_net(args):
         loaded_dict = models.segmentation.deeplabv3_resnet101(pretrained=True).state_dict()
         print(type(loaded_dict))
         model = models.segmentation.deeplabv3_resnet101(pretrained=False, num_classes=num_classes)
-        loaded_dict = {k: loaded_dict[k] for k in model.state_dict()}
+        loaded_dict = {k: loaded_dict[k] for k in model.state_dict().keys()}
         model.load_state_dict(loaded_dict, strict=False)
 
         model = nn.DataParallel(model)
