@@ -3,10 +3,11 @@ import torch
 from tensorboardX import SummaryWriter
 from torch import nn
 from torch.optim.lr_scheduler import MultiStepLR
+# from models.deeplab import DeepLab
+from torchvision import models
 
 from config import device, num_classes, grad_clip, print_freq
 from data_gen import MICDataset
-from models.deeplab import DeepLab
 from utils import parse_args, save_checkpoint, AverageMeter, clip_gradient, get_logger, get_learning_rate, accuracy
 
 
@@ -21,8 +22,9 @@ def train_net(args):
 
     # Initialize / load checkpoint
     if checkpoint is None:
-        model = DeepLab(backbone='mobilenet', output_stride=16, num_classes=num_classes)
+        # model = DeepLab(backbone='mobilenet', output_stride=16, num_classes=num_classes)
         # model = DeepLab(backbone='resnet', output_stride=16, num_classes=num_classes)
+        model = models.segmentation.deeplabv3_resnet101(pretrained=True, num_classes=num_classes)
         model = nn.DataParallel(model)
 
         if args.optimizer == 'sgd':
