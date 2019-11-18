@@ -25,8 +25,8 @@ def train_net(args):
         # model = DeepLab(backbone='mobilenet', output_stride=16, num_classes=num_classes)
         # model = DeepLab(backbone='resnet', output_stride=16, num_classes=num_classes)
         loaded_dict = models.segmentation.deeplabv3_resnet101(pretrained=True).state_dict()
-        print(type(loaded_dict))
         model = models.segmentation.deeplabv3_resnet101(pretrained=False, num_classes=num_classes)
+        print(list(model.state_dict().keys()))
         loaded_dict = {k: loaded_dict[k] for k in model.state_dict().keys()}
         model.load_state_dict(loaded_dict, strict=False)
 
