@@ -26,8 +26,8 @@ def train_net(args):
         # model = DeepLab(backbone='resnet', output_stride=16, num_classes=num_classes)
         loaded_dict = models.segmentation.deeplabv3_resnet101(pretrained=True).state_dict()
         model = models.segmentation.deeplabv3_resnet101(pretrained=False, num_classes=num_classes)
-        print(list(model.state_dict().keys()))
-        loaded_dict = {k: loaded_dict[k] for k in model.state_dict().keys()}
+        # print(list(model.state_dict().keys()))
+        loaded_dict = {k: loaded_dict[k] for k in model.state_dict().keys() if k not in ['classifier.4.weight', 'classifier.4.bias']}
         model.load_state_dict(loaded_dict, strict=False)
 
         model = nn.DataParallel(model)
