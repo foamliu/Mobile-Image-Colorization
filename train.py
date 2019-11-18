@@ -24,7 +24,10 @@ def train_net(args):
     if checkpoint is None:
         # model = DeepLab(backbone='mobilenet', output_stride=16, num_classes=num_classes)
         # model = DeepLab(backbone='resnet', output_stride=16, num_classes=num_classes)
-        model = models.segmentation.deeplabv3_resnet101(pretrained=True, num_classes=num_classes)
+        pretrained = models.segmentation.deeplabv3_resnet101(pretrained=True)
+        model = models.segmentation.deeplabv3_resnet101(pretrained=False, num_classes = num_classes)
+        model.load_state_dict(pretrained.state_dict(), strict=False)
+
         model = nn.DataParallel(model)
 
         if args.optimizer == 'sgd':
