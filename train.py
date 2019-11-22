@@ -3,7 +3,7 @@ import torch
 from torch import nn
 from torch.utils.tensorboard import SummaryWriter
 
-from config import device, num_classes, grad_clip, print_freq
+from config import device, num_classes, grad_clip, print_freq, num_workers
 from data_gen import MICDataset
 from models.deeplab import DeepLab
 from optimizer import MICOptimizer
@@ -41,9 +41,11 @@ def train_net(args):
 
     # Custom dataloaders
     train_dataset = MICDataset('train')
-    train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=8)
-    valid_dataset = MICDataset('valid')
-    valid_loader = torch.utils.data.DataLoader(valid_dataset, batch_size=args.batch_size, shuffle=False, num_workers=8)
+    train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True,
+                                               num_workers=num_workers)
+    valid_dataset = MICDataset('val')
+    valid_loader = torch.utils.data.DataLoader(valid_dataset, batch_size=args.batch_size, shuffle=False,
+                                               num_workers=num_workers)
 
     # Epochs
     for epoch in range(start_epoch, args.end_epoch):
