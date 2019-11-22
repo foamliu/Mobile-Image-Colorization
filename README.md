@@ -1,12 +1,14 @@
-# Colorful Image Colorization
+# Mobile Image Colorization
 
-This is a keras implementation of paper [Colorful Image Colorization](https://arxiv.org/abs/1603.08511).
+This is a lightweight PyTorch implementation of paper [Colorful Image Colorization](https://arxiv.org/abs/1603.08511).
+
+## Features
+
+
 
 ## Dependencies
-- [NumPy](http://docs.scipy.org/doc/numpy-1.10.1/user/install.html)
-- [Tensorflow](https://www.tensorflow.org/versions/r0.8/get_started/os_setup.html)
-- [Keras](https://keras.io/#installation)
-- [OpenCV](https://opencv-python-tutroals.readthedocs.io/en/latest/)
+- Python 3.6.8
+- PyTorch 1.3
 
 ## Dataset
 
@@ -14,9 +16,7 @@ This is a keras implementation of paper [Colorful Image Colorization](https://ar
 
 Follow the [instruction](https://github.com/foamliu/ImageNet-Downloader) to download ImageNet dataset.
 
-## Architecture
 
-![image](https://github.com/foamliu/Colorful-Image-Colorization/raw/master/images/color_net.png)
 
 
 ## Usage
