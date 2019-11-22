@@ -6,7 +6,7 @@ import sklearn.neighbors as nn
 import torch
 from torch.utils.data import Dataset
 
-from config import im_size, nb_neighbors, image_folder
+from config import im_size, nb_neighbors
 
 
 def get_soft_encoding(image_ab, nn_finder, nb_q):
@@ -38,10 +38,8 @@ class MICDataset(Dataset):
     def __init__(self, split):
         self.split = split
 
-        names_file = '{}.txt'.format(split)
-
-        with open(names_file, 'r') as f:
-            self.names = f.read().splitlines()
+        self.folder = 'data/{}'.format(split)
+        self.files = [f for f in os.listdir(self.folder) if f.lower().endswith('.jpeg')]
 
         # Load the array of quantized ab value
         q_ab = np.load("data/pts_in_hull.npy")
@@ -50,8 +48,8 @@ class MICDataset(Dataset):
         self.nn_finder = nn.NearestNeighbors(n_neighbors=nb_neighbors, algorithm='ball_tree').fit(q_ab)
 
     def __getitem__(self, i):
-        name = self.names[i]
-        filename = os.path.join(image_folder, name)
+        name = self.files[i]
+        filename = os.path.join(self.folder, name)
         # b: 0<=b<=255, g: 0<=g<=255, r: 0<=r<=255.
         bgr = cv.imread(filename)
         gray = cv.imread(filename, 0)
@@ -85,4 +83,4 @@ class MICDataset(Dataset):
         return x, y
 
     def __len__(self):
-        return len(self.names)
+        return len(self.files)

@@ -2,11 +2,12 @@ import numpy as np
 import torch
 from tensorboardX import SummaryWriter
 from torch import nn
-from optimizer import MICOptimizer
+
 from config import device, num_classes, grad_clip, print_freq
 from data_gen import MICDataset
 from models.deeplab import DeepLab
-from utils import parse_args, save_checkpoint, AverageMeter, clip_gradient, get_logger, get_learning_rate, accuracy
+from optimizer import MICOptimizer
+from utils import parse_args, save_checkpoint, AverageMeter, clip_gradient, get_logger, accuracy
 
 
 def train_net(args):
@@ -43,8 +44,6 @@ def train_net(args):
     valid_dataset = MICDataset('valid')
     valid_loader = torch.utils.data.DataLoader(valid_dataset, batch_size=args.batch_size, shuffle=False, num_workers=8)
 
-
-
     # Epochs
     for epoch in range(start_epoch, args.end_epoch):
         # One epoch's training
@@ -53,8 +52,7 @@ def train_net(args):
                                       optimizer=optimizer,
                                       epoch=epoch,
                                       logger=logger)
-        effective_lr = get_learning_rate(optimizer)
-        print('Current effective learning rate: {}\n'.format(effective_lr))
+        print('Current effective learning rate: {}\n'.format(optimizer.lr))
 
         writer.add_scalar('model/train_loss', train_loss, epoch)
         writer.add_scalar('model/train_acc', train_acc, epoch)
@@ -78,7 +76,6 @@ def train_net(args):
 
         # Save checkpoint
         save_checkpoint(epoch, epochs_since_improvement, model, optimizer, best_loss, is_best)
-
 
 
 def train(train_loader, model, optimizer, epoch, logger):
@@ -142,7 +139,8 @@ def valid(valid_loader, model, logger):
         y = y.to(device)  # [N, 313, 64, 64]
 
         # Forward prop.
-        y_hat = model(img)  # [N, 313, 64, 64]
+        with torch.no_grad():
+            y_hat = model(img)  # [N, 313, 64, 64]
 
         # Calculate loss
         # loss = criterion(out, target)
