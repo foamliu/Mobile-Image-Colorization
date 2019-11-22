@@ -24,7 +24,8 @@ def train_net(args):
         model = DeepLab(backbone='mobilenet', output_stride=16, num_classes=num_classes)
         model = nn.DataParallel(model)
 
-        optimizer = MICOptimizer(torch.optim.Adam(model.parameters(), lr=args.lr, betas=(0.9, 0.99), ))
+        optimizer = MICOptimizer(
+            torch.optim.Adam(model.parameters(), lr=args.lr, betas=(0.9, 0.99), weight_decay=args.weight_decay))
 
     else:
         checkpoint = torch.load(checkpoint)
