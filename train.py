@@ -7,7 +7,7 @@ from config import device, num_classes, grad_clip, print_freq
 from data_gen import MICDataset
 from models.deeplab import DeepLab
 from optimizer import MICOptimizer
-from utils import parse_args, save_checkpoint, AverageMeter, clip_gradient, get_logger, accuracy
+from utils import parse_args, save_checkpoint, AverageMeter, get_logger, accuracy
 
 
 def train_net(args):
@@ -107,7 +107,7 @@ def train(train_loader, model, optimizer, epoch, logger):
         loss.backward()
 
         # Clip gradients
-        clip_gradient(optimizer, grad_clip)
+        optimizer.clip_gradient(grad_clip)
 
         # Update weights
         optimizer.step()
