@@ -2,8 +2,7 @@ import numpy as np
 import torch
 from tensorboardX import SummaryWriter
 from torch import nn
-from torch.optim.lr_scheduler import MultiStepLR
-
+from optimizer import MICOptimizer
 from config import device, num_classes, grad_clip, print_freq
 from data_gen import MICDataset
 from models.deeplab import DeepLab
@@ -22,14 +21,9 @@ def train_net(args):
     # Initialize / load checkpoint
     if checkpoint is None:
         model = DeepLab(backbone='mobilenet', output_stride=16, num_classes=num_classes)
-        # model = DeepLab(backbone='resnet', output_stride=16, num_classes=num_classes)
-
         model = nn.DataParallel(model)
 
-        if args.optimizer == 'sgd':
-            optimizer = torch.optim.SGD(model.parameters(), lr=args.lr, momentum=args.mom, nesterov=True)
-        else:
-            optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
+        optimizer = MICOptimizer(torch.optim.Adam(model.parameters(), lr=args.lr, betas=(0.9, 0.99), ))
 
     else:
         checkpoint = torch.load(checkpoint)
@@ -49,7 +43,7 @@ def train_net(args):
     valid_dataset = MICDataset('valid')
     valid_loader = torch.utils.data.DataLoader(valid_dataset, batch_size=args.batch_size, shuffle=False, num_workers=8)
 
-    scheduler = MultiStepLR(optimizer, milestones=[30, 80], gamma=0.3333)
+
 
     # Epochs
     for epoch in range(start_epoch, args.end_epoch):
@@ -84,7 +78,7 @@ def train_net(args):
 
         # Save checkpoint
         save_checkpoint(epoch, epochs_since_improvement, model, optimizer, best_loss, is_best)
-        scheduler.step(epoch)
+
 
 
 def train(train_loader, model, optimizer, epoch, logger):

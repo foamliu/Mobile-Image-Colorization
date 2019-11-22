@@ -1,13 +1,17 @@
+import os
 import tarfile
 
 
-def extract(filename):
+def extract(filename, split):
     print('Extracting {}...'.format(filename))
     tar = tarfile.open(filename)
-    tar.extractall('data')
+    folder = 'data/{}'.format(split)
+    os.makedirs(folder, exist_ok=True)
+    tar.extractall(folder)
     tar.close()
 
 
 if __name__ == "__main__":
-    for filename in ['data/ILSVRC2012_img_train.tar', 'data/ILSVRC2012_img_val.tar', 'data/ILSVRC2012_img_test.tar']:
-        extract(filename)
+    for split in ['test', 'val', 'train']:
+        filename = 'data/ILSVRC2012_img_{}.tar'.format(split)
+        extract(filename, split)
