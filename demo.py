@@ -8,7 +8,7 @@ import numpy as np
 import sklearn.neighbors as nn
 import torch
 
-from config import im_size, nb_neighbors, T, epsilon, image_folder
+from config import im_size, nb_neighbors, T, epsilon
 
 if __name__ == '__main__':
     checkpoint = 'BEST_checkpoint.tar'
@@ -18,11 +18,9 @@ if __name__ == '__main__':
     model = model.to(device)
     model.eval()
 
-    names_file = 'valid.txt'
-    with open(names_file, 'r') as f:
-        names = f.read().splitlines()
-
-    samples = random.sample(names, 10)
+    folder = 'data/test'
+    files = [f for f in os.listdir(folder) if f.lower().endswith('.jpeg')]
+    samples = random.sample(files, 10)
 
     h, w = im_size // 4, im_size // 4
 
@@ -35,7 +33,7 @@ if __name__ == '__main__':
 
     for i in range(len(samples)):
         image_name = samples[i]
-        filename = os.path.join(image_folder, image_name)
+        filename = os.path.join(folder, image_name)
         print('Start processing image: {}'.format(filename))
         # b: 0 <=b<=255, g: 0 <=g<=255, r: 0 <=r<=255.
         bgr = cv.imread(filename)
