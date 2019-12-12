@@ -6,7 +6,6 @@ from torch.utils.tensorboard import SummaryWriter
 from config import device, num_classes, grad_clip, print_freq, num_workers
 from data_gen import MICDataset
 from models.deeplab import DeepLab
-from optimizer import MICOptimizer
 from utils import parse_args, save_checkpoint, AverageMeter, get_logger, accuracy
 
 
@@ -24,8 +23,7 @@ def train_net(args):
         model = DeepLab(backbone='mobilenet', output_stride=16, num_classes=num_classes)
         model = nn.DataParallel(model)
 
-        optimizer = MICOptimizer(
-            torch.optim.Adam(model.parameters(), lr=args.lr, betas=(0.9, 0.99), weight_decay=args.weight_decay))
+        optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, betas=(0.9, 0.99), weight_decay=args.weight_decay)
 
     else:
         checkpoint = torch.load(checkpoint)
