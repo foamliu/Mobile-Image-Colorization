@@ -6,7 +6,7 @@ from torch.utils.tensorboard import SummaryWriter
 from config import device, num_classes, grad_clip, print_freq, num_workers
 from data_gen import MICDataset
 from models.deeplab import DeepLab
-from utils import parse_args, save_checkpoint, AverageMeter, get_logger, accuracy, clip_gradient
+from utils import parse_args, save_checkpoint, AverageMeter, get_logger, accuracy, clip_gradient, get_learning_rate
 
 
 def train_net(args):
@@ -53,7 +53,8 @@ def train_net(args):
                                       optimizer=optimizer,
                                       epoch=epoch,
                                       logger=logger)
-        print('Current effective learning rate: {}\n'.format(optimizer.lr))
+        lr = get_learning_rate(optimizer)
+        print('Current effective learning rate: {}\n'.format(lr))
 
         writer.add_scalar('model/train_loss', train_loss, epoch)
         writer.add_scalar('model/train_acc', train_acc, epoch)
